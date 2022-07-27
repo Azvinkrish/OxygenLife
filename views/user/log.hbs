@@ -1,0 +1,97 @@
+<body class="animsition">
+	{{!-- <!-- Header -->
+	<header class="header-v2">
+		<!-- Header desktop -->
+		<div class="container-menu-desktop trans-03">
+			<div class="wrap-menu-desktop">
+				<nav class="limiter-menu-desktop p-l-45">
+
+					<!-- Logo desktop -->
+					<a href="#" class="logo">
+						<img src="images/icons/logo-01.png" alt="IMG-LOGO">
+					</a>
+
+					<!-- Menu desktop -->
+					<div class="menu-desktop">
+						<ul class="main-menu">
+
+				</nav>
+			</div>
+		</div>
+	</header> --}}
+	<!-- Slider -->
+	<section class="section-slide">
+		<div class="wrap-slick1 rs1-slick1">
+			<div class="slick1">
+				<div class="item-slick1" style="background-image: url(images/login_user1.webp);">
+					<div class="container h-full">
+						<div class="flex-col-l-m h-full p-t-100 p-b-30">
+							<div class="d-flex mr-5 ">
+								<div class="flex-col-l-m h-full p-t-100 p-b-30">
+									<div class="layer-slick1 animated visible-false" data-appear="fadeInDown"
+										data-delay="0">
+										<span class="text-light ltext-202 cl2 respon2">
+											All Planters Collection
+										</span>
+									</div>
+
+									<div class="layer-slick1 animated visible-false" data-appear="fadeInUp"
+										data-delay="800">
+										<h2 class="text-light ltext-104 cl2 p-t-19 p-b-43 respon1">
+											INDOOR
+										</h2>
+									</div>
+
+									<div class="layer-slick1 animated visible-false" data-appear="zoomIn"
+										data-delay="1600">
+										<a href="/signup"
+											class="flex-c-m stext-101 cl0 size-101 bg5 bor1 hov-btn1 p-lr-15 trans-04">
+											SIGN UP
+										</a>
+									</div>
+								</div>
+							
+								<div class="d-flex justify-content-center ml-5 pl-5 flex-col-l-m h-full p-t-100 p-b-30">
+									<form class="float-right" action="/login" id="userLogin" method="POST">
+										{{#if loginErr}}
+										<p class="error">{{loginErr}}</p>
+										{{/if}}
+										<div class="mb-3">
+											<label for="exampleInputEmail1" class="form-label float-left text-light font-weight-bold">Email Id <span
+													class="text-danger ">*</span></label><br>
+											<input type="email" class="form-control" style="width: 30rem;" name="email" id="email"
+												placeholder="Enter your email id" />
+										</div>
+
+										<div class="mb-3 ">
+											<label for="exampleInputPassword1" class="form-label float-left text-light font-weight-bold" for="password">Password <span
+													class="text-danger">*</span></label><br>
+											<input type="password" class="form-control" style="width: 30rem;" name="Password" id="password"
+												placeholder="Enter Your Password" />
+										</div>
+										{{#if loginError}}
+										<p>Invalid email or password</p>
+										{{/if}} <br>
+										<div class="">
+											<input type="submit" value="Login" class="btn btn-primary  btn-block"
+												onclick="fun()" />
+										</div>
+										<div class="text-center text-lg-start mt-4 pt-2">
+											<p class="text-light fw-bold mt-2 pt-1 mb-0"> <a
+													href="#" class="link-danger">Forgot Password</a></p>
+										</div>
+										
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+
+
+</body>

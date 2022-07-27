@@ -1,0 +1,276 @@
+<body class="animsition bg-light">
+	<div id="products">
+		<!-- Shoping Cart -->
+		<form class="bg0 p-t-75 p-b-85" action="confirmOrder" id="checkOut-form">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+						<div class="m-l-25 m-r--38 m-lr-0-xl">
+							<div class="wrap-table-shopping-cart">
+								<div class="checkout_area section_padding_100">
+									<div class="container">
+										<div class="row">
+
+
+											<div class="col-12 col-md-6">
+												<div class="checkout_details_area mt-50 clearfix">
+
+													<div class="cart-page-heading">
+														<h5>Billing Address</h5>
+
+													</div>
+													<br>
+
+
+													<div class="row">
+
+														{{!-- <div class="col-md-6 mb-3">
+															<label for="first_name">First Name
+																<span>*</span></label>
+															<input type="text" name="firstname" class="form-control"
+																id="first_name" value="{{userDetails.firstname}}"
+																required>
+														</div>
+														<div class="col-md-6 mb-3">
+															<label for="last_name">Last Name
+																<span>*</span></label>
+															<input type="text" name="lastname" class="form-control"
+																id="last_name" value="{{userDetails.lastname}}"
+																required>
+														</div> --}}
+
+														{{!-- <div class="col-12 mb-3">
+															<label for="country">State <span>*</span></label>
+															<input type="text" name="state" class="form-control"
+																id="last_name" value="{{userData.Address.state}}"
+																required>
+														</div> --}}
+
+														<div class="col-12 mb-3">
+															<label for="street_address">Address
+																<span>*</span></label>
+															<input type="text" name="home" class="form-control mb-3"
+																id="street_address" value="{{userData.Address.house}}"
+																required>
+
+														</div>
+														<div class="col-12 mb-3">
+															<label for="postcode">Town/City
+																<span>*</span></label>
+															<input type="text" name="city" class="form-control"
+																id="postcode" value="{{userData.Address.city}}"
+																required>
+														</div>
+														<div class="col-12 mb-3">
+															<label for="city">Postcode<span>*</span></label>
+															<input type="number" name="pincode" class="form-control"
+																id="city" value="{{userData.Address.pincode}}" required>
+														</div>
+														<div class="col-12 mb-3">
+															<label for="phone_number">Phone No
+																<span>*</span></label>
+															<input type="number" name="phonenumber" class="form-control"
+																value="{{userData.Address.phonenumber}}"
+																id="phone_number" min="0" required>
+														</div>
+														{{!-- <div class="col-12 mb-4">
+															<label for="email_address">Email Address
+																<span>*</span></label>
+															<input type="email" name="email" class="form-control"
+																id="email_address" value="{{userDetails.email}}">
+														</div> --}}
+
+
+													</div>
+
+												</div>
+											</div>
+
+											<div class="col-12 col-md-6 col-lg-5 ml-lg-auto">
+												<div class="order-details-confirmation">
+
+													<div class="cart-page-heading">
+														<h5>Your Order</h5>
+
+													</div>
+													<br>
+
+													<ul class="order-details-form mb-4">
+														{{#each cartItems}}
+														{{#each product}}
+														<li><img src="/product-images/{{this._id}}.jpg" height="50"
+																width="50" alt="thumbnail_cartproducts">
+															<span class="ms-4">{{this.title}}</span>
+														</li>
+														{{/each}}
+														{{/each}}
+														<br>
+														<li><span >Total MRP</span> <span id="totalAmount">Rs. {{grandTotal}}</span>
+														</li>
+														<li></li>
+														<li><span>Discount on MRP</span> <span class="text-success">-
+																Rs. {{cartDetails.cartPriceInfo.discount}}</span>
+														</li>
+														<li><span>Shipping</span> <span>Free</span></li>
+														<li><span class="fw-bolder">Total Amount</span> <span
+																class="fw-bolder">Rs. {{grandTotal}}</span></li>
+														<li>
+															<div class="form-check form-check-inline">
+																<input class="form-check-input" type="radio"
+																	name="modeofpayment" id="cod" value="cod" />
+																<label class="form-check-label ms-2" for="cod">Cash
+																	on
+																	delivery</label>
+															</div>
+														</li>
+														<li>
+
+															<div class="form-check form-check-inline">
+																<input class="form-check-input" type="radio"
+																	name="modeofpayment" id="onlinepayment"
+																	value="onlinepayment" />
+																<label class="form-check-label ms-2"
+																	for="onlinepayment">Online-Payment</label>
+															</div>
+														</li>
+													</ul>
+
+													
+												</div>
+
+											</div>
+
+
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
+								<div class="flex-w flex-m m-r-20 m-tb-5">
+									<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text"
+										id="couponName" name="coupon" placeholder="Coupon Code" id="couponCode">
+
+									<div id="applyCoupon"
+										class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
+										Apply coupon
+									</div>
+								</div>
+
+								<input class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" value="PlaceOrder"
+														type="submit">
+													
+
+
+								{{!-- <button
+									class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+									<a
+										href="#">
+										PLACE ORDER
+									</a>
+								</button> --}}
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+
+
+	<!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+
+
+	<script>
+
+		const applycoupon = document.getElementById('applyCoupon');
+		
+		applycoupon.addEventListener('click', applyc)
+
+
+		function applyc() {
+
+			const coupon_code = document.getElementById('couponName').value
+			
+			alert(coupon_code)
+			
+
+			 $.ajax({
+			
+				url: '/applyCoupon/',
+				data:{
+					coupon: coupon_code
+
+				},
+				method: 'post',
+				success: (response) => {
+					let discount = response.discount
+				}
+			}) 
+
+		}
+
+	</script>
+
+
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+	<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+	<script>
+		$(".js-select2").each(function () {
+			$(this).select2({
+				minimumResultsForSearch: 20,
+				dropdownParent: $(this).next('.dropDownSelect2')
+			});
+		})
+	</script>
+	<!--===============================================================================================-->
+	<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+	<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function () {
+			$(this).css('position', 'relative');
+			$(this).css('overflow', 'hidden');
+			var ps = new PerfectScrollbar(this, {
+				wheelSpeed: 1,
+				scrollingThreshold: 1000,
+				wheelPropagation: false,
+			});
+
+			$(window).on('resize', function () {
+				ps.update();
+			})
+		});
+	</script>
+	<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+
+
+
+
+
+
+</body>

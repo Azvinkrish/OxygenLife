@@ -1,0 +1,96 @@
+<div class="container">
+
+
+  <div class="row">
+    <div class=" col-md-6 col-lg-4 mx-auto " onload="display()">
+      <h1 class="  mb-5 mt-5 ms-5">Add New Product </h1>
+      <form action="/admin/add-item" method="post" enctype="multipart/form-data">
+
+        <table class="table table-borderless">
+          <tr>
+            <td>
+              <p class="opacity-75 ">Title</p>
+            </td>
+            <td>
+              <input type="text" class="form-control" name="title" required>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p class="opacity-75">Descripition</p>
+            </td>
+            <td>
+              <input type="text" class="form-control" name="description" style="height" aria-describedby="emailHelp">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p class="opacity-75">Price</p>
+            </td>
+            <td>
+              <input type="number" class="form-control" name="price" min="0">
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <p class="opacity-75">Category</p>
+            </td>
+            <td>
+              <div class="col d-flex">
+          <select name="category" class="form-control me-3">
+            <option value="none" selected>Choose Category</option>
+            {{#each category}}
+            <option>{{this.category}}</option>
+            {{/each}}
+          </select>
+         
+        </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <p class="opacity-75">Quantity</p>
+            </td>
+            <td>
+              <input type="number" class="form-control" name="stock" min="0">
+            </td>
+          </tr>
+
+
+        </table>
+
+
+
+    </div>
+    <div class="col-md-6 mt-5 ">
+
+      <div class="ms-5">
+        <h1 class="fs-2 text-warning mb-5 ms-5">Choose Images </h1>
+      </div>
+      <label for="formFileMultiple" class="form-label">Select images</label>
+      <input class="form-control" name="image" type="file" id="formFileMultiple" style="width: 30rem;" multiple />
+    </div>
+    
+  </div>
+
+
+  <div class="row">
+    <div class="d-flex justify-content-center mt-5 mb-5 ">
+      <input class="btn btn-success " type="submit" value="ADD">
+
+    </div>
+  </div>
+</div>
+</form>
+{{!-- </div> --}}
+<footer class="sticky-footer bg-white">
+  <div class="container my-auto">
+    <div class="copyright text-center my-auto">
+      <span>Copyright &copy; Oxygen-Life 2022</span>
+    </div>
+  </div>
+</footer>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>

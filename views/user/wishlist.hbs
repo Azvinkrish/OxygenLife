@@ -1,0 +1,76 @@
+<body class="animsition">
+    <!-- Shoping Cart -->
+    <form class="bg0 p-t-75 p-b-85">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+                    <div class="m-l-25 m-r--38 m-lr-0-xl">
+                        <div class="wrap-table-shopping-cart">
+                            <table class="table-shopping-cart pr-5 pl-3">
+                                <tr class="table_head pr-5 ">
+                                    <th class="column-1">Product</th>
+                                    <th class=""></th>
+
+                                  
+                                    <th class="column-3">Action</th>
+                                    
+
+                                </tr>
+                                {{#each wishList}}
+                                <tr class="table_row">
+                                    {{#each this.product}}
+                                      <a href="/detailview/{{this._id}}">
+                                    <td class="column-1">
+                                      
+                                        <div class="how-itemcart1">
+                                            <img src="/product-images/{{this._id}}.jpg" alt="IMG">
+                                        </div>
+                                       
+                                    </td>
+                                     </a>
+                                    <td class="column-2">
+                                          <a href="/detailview/{{this._id}}" class="text-secondary">{{this.title}}  </a>
+                                          </td>
+                                   
+                                        
+                                    </td>
+                                    {{/each}}
+       
+                                    <td class="column-3"><a class="text-secondary" href="/addcart">Add to cart </a></td>
+
+
+
+
+                                </tr>
+                                {{/each}}
+
+
+                            </table>
+                        </div>
+
+                        {{!-- <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
+                            <div class="flex-w flex-m m-r-20 m-tb-5">
+                                <input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text"
+                                    name="coupon" placeholder="Coupon Code">
+
+                                <div
+                                    class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
+                                    Apply coupon
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+                                Update Cart
+                            </div>
+                        </div> --}}
+
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+</body>

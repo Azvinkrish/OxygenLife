@@ -1,0 +1,19 @@
+<section class="text-center">
+  <div class="container mt-5 ">
+    <div class="row ">
+      {{#each products}}
+      <div class="col-md-4 align-items-center ">
+        <div class="card  align-items-center col-sm-6 col-md-4 mt-5 pt-5 text-white bg-dark  bg-gradient rounded"
+          style="width: 100%;">
+          <img src="{{this.image}}" class="cardimgg card-img-top " alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{this.batchname}}</h5>
+            <p class="card-text">{{this.batchdetails}}</p>
+            <a href="#" class="btn btn-primary">Details</a>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
