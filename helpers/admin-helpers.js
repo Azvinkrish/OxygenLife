@@ -2,7 +2,7 @@ var db = require('../config/connection')
 var collection = require('../config/collections');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
-const async = require('hbs/lib/async');
+// const async = require('hbs/lib/async');
 
 
 

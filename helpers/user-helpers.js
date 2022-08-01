@@ -2,11 +2,11 @@ var db = require('../config/connection')
 var collection = require('../config/collections')
 const bcrypt = require('bcrypt')
 const { ObjectId } = require('mongodb');
-const { response } = require('express');
-const async = require('hbs/lib/async');
+
+// const async = require('hbs/lib/async');
 const Razorpay = require('razorpay');
-const { Resolver } = require('dns/promises');
-const { log } = require('console');
+
+
 require('dotenv').config();
 var instance = new Razorpay({
     key_id: process.env.KEY_ID,
