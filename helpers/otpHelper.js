@@ -1,17 +1,11 @@
-// const config = require('../config/otpVerfication')
-// const client = require('twilio')(config.accountSID,config.authToken)
-
-require('dotenv').config();
-const accountSID = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const serviceId = process.env.TWILIO_SERVICE_ID;
-const client = require('twilio')(accountSID, authToken);
+const config = require('../config/otpVerfication')
+const client = require('twilio')(config.accountSID,config.authToken)
 
 module.exports={
     make:(phone_number)=>{
         return new Promise(async(resolve,reject)=>{
            await client.verify
-            .services(serviceId)
+            .services(config.serviceId)
             .verifications.create({
                 to:`+91${phone_number}`,
                 channel:'sms'
@@ -26,7 +20,7 @@ module.exports={
         return new Promise(async(resolve,reject)=>{
             console.log(phone_number);
            await client.verify
-           .services(serviceId)
+           .services(config.serviceId)
            .verificationChecks.create({
                to:`+91${phone_number}`,
                code:otp,

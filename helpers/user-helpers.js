@@ -4,11 +4,13 @@ const bcrypt = require('bcrypt')
 const { ObjectId } = require('mongodb');
 const { response } = require('express');
 const async = require('hbs/lib/async');
-const Razorpay = require('razorpay')
-
+const Razorpay = require('razorpay');
+const { Resolver } = require('dns/promises');
+const { log } = require('console');
+require('dotenv').config();
 var instance = new Razorpay({
-    key_id: 'rzp_test_Uvhyfh8NZOZ5Ey',
-    key_secret: 'JDjjeE1e9aWTilDfvaszYMH6',
+    key_id: process.env.KEY_ID,
+    key_secret: process.env.KEY_SECRET
 });
 
 module.exports = {
@@ -122,21 +124,21 @@ module.exports = {
             }
         })
     },
-    getCartcount:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
+    getCartcount: (userId) => {
+        return new Promise(async (resolve, reject) => {
             console.log("in cart count")
             let cartCount = 0
-        
-            user = await db.get().collection(collection.CART_COLLECTION).findOne({user:ObjectId(userId)})
+
+            user = await db.get().collection(collection.CART_COLLECTION).findOne({ user: ObjectId(userId) })
             // console.log(user.product.length);
-            if(user){
-               
-            cartCount = user.product.length
+            if (user) {
+
+                cartCount = user.product.length
 
 
             }
-            console.log(cartCount,4444444);
-            resolve( cartCount)
+            console.log(cartCount, 4444444);
+            resolve(cartCount)
         })
     },
     getcart: (userId) => {
@@ -166,34 +168,15 @@ module.exports = {
                 }
             ]).toArray()
 
-            console.log(cart,666666666666666666666666666666);
+            console.log(cart, 666666666666666666666666666666);
 
-            let cartItems = cart.map((x) => {
-                return ({ ...x, price: Number(x.product[0].price), total: Number(x.product[0].price * x.quantity) })
-            })
-
-            console.log(444444444444444);
-        
-            
-
-            let grandTotal = cartItems.reduce((x, current) => {
-                return x + current.total
-            }, cartItems[0].total)
-        
-         
-                grandTotal = grandTotal - cartItems[0].total
-           
-
-
-            let response = {
-                cartItems,
-                grandTotal,
+            let response = cart
              
-            }
             resolve(response)
         })
 
     },
+    
     addwish: (productid, userId) => {
         {
             console.log('adwish in');
@@ -237,6 +220,7 @@ module.exports = {
         console.log(userId);
 
         return new Promise(async (resolve, reject) => {
+            console.log(1213);
             let wishList = await db.get().collection(collection.WISH_COLLECTION).aggregate([
                 {
                     $match: { user: ObjectId(userId) }
@@ -264,7 +248,203 @@ module.exports = {
             resolve(wishList)
         })
     },
-    // decCart:(proId,userId)=>{
+    
+    getTotal: (cart) => {
+        console.log(cart,53535353535353535);
+        return new Promise(async (resolve, reject) => {
+           
+            let cartItems = cart.map((x) => {
+                return ({ ...x, price: Number(x.product[0].price), total: Number(x.product[0].price * x.quantity) })
+            })
+
+            let subTotal = cartItems.reduce((x, current) => {
+                return x + current.total
+            }, cartItems[0].total)
+            subTotal = subTotal - cartItems[0].total
+
+            console.log(subTotal);
+            console.log(cartItems);
+            let response = {
+                subTotal,
+                cartItems
+            }
+
+            resolve(response)
+        })
+    },
+
+    getCartproducts: async (userId) => {
+        return new Promise(async (resolve, reject) => {
+            let cart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: ObjectId(userId) })
+            console.log(cart, 66666666666666666);
+            console.log(cart.product, 777777777777777777);
+            let cartlist = cart.product
+
+
+
+            resolve(cart)
+        })
+
+    },
+    placeOrder: async (orderData, userId, total, cartProducts) => {
+        return await new Promise((resolve, reject) => {
+            let status = orderData.modeofpayment === 'cod' ? 'confirmed' : 'pending'
+            let orderObj = {
+                user: ObjectId(userId),
+                deliveryDetails: {
+                    contact: orderData.phonenumber,
+                    address: orderData.home,
+                    pincode: orderData.pincode
+                },
+                modeofpayment: orderData.modeofpayment,
+                products: cartProducts,
+                amount: total,
+                status: status
+
+            }
+            db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
+
+
+
+                db.get().collection(collection.CART_COLLECTION).deleteOne({ user: ObjectId(userId) })
+
+
+                resolve(orderObj)
+
+            })
+
+        })
+    },
+    generateRazorpay: (orderId, total) => {
+        return new Promise(async (resolve, reject) => {
+            var options = {
+                amount: total * 100,
+                currency: "INR",
+                receipt: '' + orderId
+            };
+            instance.orders.create(options, function (err, order) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(order);
+                    resolve(order)
+                }
+            });
+        })
+    },
+
+    verifyPayment: (details) => {
+
+        return new Promise(async (resolve, reject) => {
+            const crypto = require('crypto')
+            let hmac = crypto.Hmac('sha256', 'JDjjeE1e9aWTilDfvaszYMH6')
+
+            hmac.update(details['payment[razorpay_order_id]'] + '|' + details['payment[razorpay_payment_id]'])
+            hmac = hmac.digest('hex')
+            if (hmac == details['payment[razorpay_signature]']) {
+                console.log('anasmulla')
+                resolve(response)
+            } else {
+                reject()
+            }
+
+        })
+    },
+    paymentStatus: (orderId) => {
+        return new Promise(async (resolve, reject) => {
+            console.log(1233133);
+            await db.get().collection(collection.ORDER_COLLECTION).
+                updateOne({ _id: ObjectId(orderId) },
+                    {
+                        $set: {
+                            status: 'placed'
+                        }
+                    }
+                ).then(() => {
+
+                    resolve()
+                }).catch((err) => {
+                    console.log(err);
+                })
+
+        })
+    },
+    getOrderlist: async (userId) => {
+        console.log(userId);
+        console.log(2222222222222222222);
+        return await new Promise(async (resolve, reject) => {
+            console.log(333333333333333);
+            let orders = await db.get().collection(collection.ORDER_COLLECTION).find({ user: ObjectId(userId) }).toArray()
+
+
+            console.log(orders)
+            resolve(orders)
+        })
+    },
+    validateCoupon:(userCoupon,subTotal,Allcoupons)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+
+            
+            let match = await db.get().collection(collection.COUPON_COLLECTION).findOne({CoupoCode:(userCoupon)})
+            console.log(match)
+            let discount = 0
+            let grandTotal
+            let validation = ""
+            if(match){
+                if(match.Limit>=0){
+                  discount = match.discount
+                 grandTotal = subTotal - discount
+
+                console.log(grandTotal);
+                console.log(discount);
+                validation ="coupon applied"
+                let response = 
+                {
+                    validation,
+                    discount,
+                    grandTotal
+                }
+                console.log(response)
+                resolve(response)
+            }else{
+                let validation = "Offer exceeded"
+                reject({response:validation})
+            }
+            }else{
+                let validation ="Invalid Coupon"
+                reject({response:validation})
+            }
+        })
+    },
+    getAllcoupons:()=>{
+        return new Promise(async(resolve,reject)=>{
+            let coupons = db.get().collection(collection.COUPON_COLLECTION).find({}).toArray()
+        
+                resolve(coupons)
+           
+        })
+    },updateCouponlimit:(coupon)=>{
+        return new Promise(async(resolve,reject)=>{
+        
+        let cc = await db.get().collection(collection.COUPON_COLLECTION).UpdateOne({CoupoCode:coupon})
+        // ,{
+        //     $set:{
+        //         $inc: { 'coupon.$.Limit': -1 }
+        //     }
+        //  })
+         
+      console.log(response);
+        resolve(response)
+    })
+}
+}
+
+
+
+
+
+// decCart:(proId,userId)=>{
     //     console.log(proId,true,true);
     //     console.log(userId,"hahaah");
 
@@ -323,125 +503,3 @@ module.exports = {
     //                 })
     //     })
     // },
-    getTotal: (userId) => {
-        console.log(userId);
-        return new Promise(async (resolve, reject) => {
-            let cart = await db.get().collection(collection.CART_COLLECTION).aggregate([
-                {
-                    $match: { user: ObjectId(userId) }
-
-                },
-                {
-                    $unwind: '$product'
-                },
-                {
-                    $project: {
-                        item: '$product.productId',
-                        quantity: '$product.quantity'
-                    }
-                },
-                {
-                    $lookup: {
-                        from: collection.PRODUCTS_COLLECTION,
-                        localField: 'item',
-                        foreignField: '_id',
-                        as: 'product'
-                    }
-                }
-            ]).toArray()
-
-            let cartItems = cart.map((x) => {
-                return ({ ...x, price: Number(x.product[0].price), total: Number(x.product[0].price * x.quantity) })
-            })
-
-            let grandTotal = cartItems.reduce((x, current) => {
-                return x + current.total
-            }, cartItems[0].total)
-            grandTotal = grandTotal - cartItems[0].total
-
-            resolve(grandTotal)
-        })
-    },
-
-    getCartproducts: async (userId) => {
-        return new Promise(async (resolve, reject) => {
-            let cart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: ObjectId(userId) })
-            console.log(cart, 66666666666666666);
-            console.log(cart.product, 777777777777777777);
-            let cartlist = cart.product
-
-
-
-            resolve(cart)
-        })
-
-    },
-    placeOrder: async (orderData, userId, total, cartProducts) => {
-        return await new Promise((resolve, reject) => {
-            let status = orderData.modeofpayment === 'cod' ? 'confirmed' : 'pending'
-            let orderObj = {
-                user: ObjectId(userId),
-                deliveryDetails: {
-                    contact: orderData.phonenumber,
-                    address: orderData.home,
-                    pincode: orderData.pincode
-                },
-                modeofpayment: orderData.modeofpayment,
-                products: cartProducts,
-                amount: total,
-                status: status
-
-            }
-            db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
-
-              
-
-                db.get().collection(collection.CART_COLLECTION).deleteOne({ user: ObjectId(userId) })
-               
-               
-                resolve(orderObj)
-
-            })
-            
-        })
-    },
-    generateRazorpay: (orderId,total) => {
-        return new Promise(async (resolve, reject) => {
-            var options ={
-                amount: total,
-                currency: "INR",
-                receipt: ''+orderId
-            };
-            instance.orders.create(options, function(err, order) {
-                console.log(order);
-                resolve(order)
-              });
-              
-
-        })
-    },
-
-
-
-
-
-
-
-
-
-
-
-
-    getOrderlist: async (userId) => {
-        console.log(userId);
-        console.log(2222222222222222222);
-        return await new Promise(async (resolve, reject) => {
-            console.log(333333333333333);
-            let orders = await db.get().collection(collection.ORDER_COLLECTION).find({ user: ObjectId(userId) }).toArray()
-            console.log(444444444444444444444444);
-
-            console.log(orders)
-            resolve(orders)
-        })
-    },
-}

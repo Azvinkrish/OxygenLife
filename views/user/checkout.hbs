@@ -1,9 +1,9 @@
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <body class="animsition bg-light">
 	<div id="products">
 		<!-- Shoping Cart -->
-		<form class="bg0 p-t-75 p-b-85"   id="checkOut_form">
+		<form class="bg0 p-t-75 p-b-85" id="checkOut_form">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
@@ -76,7 +76,8 @@
 																id="phone_number" min="0" required>
 														</div>
 
-														<input type="text" name="userId" value="{{req.session.user._id}}">
+														<input type="text" name="userId"
+															value="{{req.session.user._id}}">
 														{{!-- <div class="col-12 mb-4">
 															<label for="email_address">Email Address
 																<span>*</span></label>
@@ -109,16 +110,22 @@
 														{{/each}}
 														{{/each}}
 														<br>
-														<li><span >Total MRP</span> <span id="totalAmount" >Rs. {{grandTotal}}</span>
+														<li><span>Total MRP</span> <span id="totalAmount">Rs.
+																{{subTotal}}</span>
 
 														</li>
 														<li></li>
-														<li><span>Discount on MRP</span> <span class="text-success">-
-																Rs. {{cartDetails.cartPriceInfo.discount}}</span>
+														<li><span>Discount on MRP</span> <span class="text-success" id="discountId">-
+																Rs. {{discount}}</span>
 														</li>
 														<li><span>Shipping</span> <span>Free</span></li>
+														{{#if grandTotal}}
 														<li><span class="fw-bolder">Total Amount</span> <span
 																class="fw-bolder">Rs. {{grandTotal}}</span></li>
+														{{else}}
+														<li><span class="fw-bolder">Total Amount</span> <span
+																class="fw-bolder " id="subtotalId">Rs. {{subTotal}}</span></li>
+														{{/if}}
 														<li>
 															<div class="form-check form-check-inline">
 																<input class="form-check-input" type="radio"
@@ -140,7 +147,7 @@
 														</li>
 													</ul>
 
-													
+
 												</div>
 
 											</div>
@@ -162,15 +169,15 @@
 									</div>
 								</div>
 
-								<input class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" value="PlaceOrder"
-														type="submit">
-													
+								<input
+									class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"
+									value="PlaceOrder" type="submit">
+
 
 
 								{{!-- <button
 									class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-									<a
-										href="#">
+									<a href="#">
 										PLACE ORDER
 									</a>
 								</button> --}}
@@ -192,71 +199,152 @@
 			<i class="zmdi zmdi-chevron-up"></i>
 		</span>
 	</div>
-<script>
-	 
+	<script>
 
-		$("#checkOut_form").submit((e)=>{
-			alert('ewjsfkf')
+
+		$("#checkOut_form").submit((e) => {
 			e.preventDefault()
 			$.ajax({
 				url: '/confirmOrder',
-				method:'post',
-				data:$("#checkOut_form").serialize(),
-				   success: (response) => {
-        		if (response) {
-         
-          		location.href = '/successPage'
-        }
-        else {
-        
-          
-        }
-      }
+				method: 'post',
+				data: $("#checkOut_form").serialize(),
+				success: (response) => {
+					if (response.cod) {
+						location.href = '/successPage'
+					} else {
+						razorpayPayment(response)
 
-
+					}
+				}
 			})
 
-		})
-	 
+		});
+
+		function razorpayPayment(order) {
+			var options = {
+				"key": "rzp_test_Uvhyfh8NZOZ5Ey", // Enter the Key ID generated from the Dashboard
+				"amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+				"currency": "INR",
+				"name": "Oxygen-Life",
+				"description": "Test Transaction",
+				"image": "https://example.com/your_logo",
+				"order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+				"handler": function (response) {
+					verifyPayement(response, order)
+				},
+				"prefill": {
+					"name": "Gaurav Kumar",
+					"email": "gaurav.kumar@example.com",
+					"contact": "9999999999"
+				},
+				"notes": {
+					"address": "Razorpay Corporate Office"
+				},
+				"theme": {
+					"color": "#3399cc"
+				}
+			};
+			var rzp1 = new Razorpay(options);
+			rzp1.open();
+			e.preventDefault();
+		}
+		function verifyPayement(payment, order) {
+			$.ajax({
+				url: '/verify-payment',
+				data: {
+					payment,
+					order
+				},
+				method: 'post',
+				success: (response) => {
+					if (response.status) {
+						location.href = '/successPage'
+					} else {
+						alert('payment failed')
+					}
+				}
+			})
+		}
+
+
+
 	</script>
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
 	<script>
 
 		const applycoupon = document.getElementById('applyCoupon');
-		
+
 		applycoupon.addEventListener('click', applyc)
 
 
 		function applyc() {
 
 			const coupon_code = document.getElementById('couponName').value
-			
-			alert(coupon_code)
-			
 
-			 $.ajax({
-			
+			alert(coupon_code)
+
+
+			$.ajax({
+
+
 				url: '/applyCoupon/',
-				data:{
+				data: {
 					coupon: coupon_code
 
 				},
 				method: 'post',
 				success: (response) => {
-					let discount = response.discount
+					console.log(response.err.response)
+					
+					if (response.response.validation == "coupon applied") {
+						
+						Swal.fire(
+							'SUCCESS',
+							'COUPON APPLIED SUCCESSFULLY'
+							
+						)
+					
+					let discount = response.response.discount
+					let grandTotal = response.response.grandTotal
+					console.log(discount,grandTotal)
+					document.getElementById("discountId").innerHTML = discount
+					document.getElementById("subtotalId").innerHTML = grandTotal
+			
+
+					}else if(response.err.validation == "Offer exceeded"){
+							Swal.fire(
+							'SUCCESS',
+							'Offer Exceeded'
+							
+						)
+					
+
+						}else{
+								Swal.fire(
+							'SUCCESS',
+							'Invalid coupon'
+							
+						)
+					
+						}
+
+
 				}
-			}) 
+			})
 
 		}
 
 	</script>
 
-	
 
 
 
 
-	{{!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script> --}}
+
+	{{!--
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script> --}}
 
 	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
