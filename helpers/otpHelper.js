@@ -1,4 +1,4 @@
-const config = require('../config/otpVerfication')
+
 const client = require('twilio')(config.accountSID,config.authToken)
 
 module.exports={
