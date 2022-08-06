@@ -3,7 +3,7 @@
 <body class="animsition bg-light">
 	<div id="products">
 		<!-- Shoping Cart -->
-		<form class="bg0 p-t-75 p-b-85">
+		<div class="bg0 p-t-75 p-b-85">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
@@ -68,7 +68,7 @@
 
 
 										<td><button onclick="removeCartpro('{{this._id}}','{{this.item}}')"
-												class="btn btn-danger">Remove</button></td>
+												class="btn btn-danger"> Remove</button></td>
 
 									</tr>
 
@@ -229,7 +229,7 @@
 					</div>
 				</div>
 			</div>
-		</form>
+		</div>
 	</div>
 
 
@@ -256,11 +256,19 @@
 				},
 				method: 'post',
 				success: (response) => {
-
 					console.log(response)
-					let subTotal = response.subTotal
-					document.getElementById("subTotalid").innerHTML = subTotal
-					$("#products").load(location.href + "#products");
+					if (response.removeProduct) {
+
+						location.reload();
+
+					} else {
+
+						let subTotal = response.subTotal
+						document.getElementById("subTotalid").innerHTML = subTotal
+						$("#products").load(location.href + "#products");
+
+
+					}
 
 
 				}
@@ -270,11 +278,15 @@
 		}
 	</script>
 
-	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	
 	<script>
 		function removeCartpro(cartId, proId) {
-			Swal.fire({
 
+			console.log(cartId);
+			console.log(99999999999)
+			console.log(proId)
+
+			Swal.fire({
 				title: 'Are you sure?',
 				text: "You won't be able to revert this!",
 				icon: 'warning',
@@ -284,22 +296,31 @@
 				confirmButtonText: 'Yes, delete it!'
 			}).then((result) => {
 				if (result.isConfirmed) {
-					Swal.fire(
+				$.ajax({
+					url: "/removeProcart",
+					data: {
+						cart: cartId,
+						product: proId,
+					},
+					method: "post",
+					success: (Response) => {
+						if (Response) {
+							alert('product removed from cart')
+							location.reload()
+						}
+					}
+				})
+				Swal.fire(
 						'Deleted!',
 						'Your file has been deleted.',
 						'success'
 					)
 				}
 			})
-				.then((result) => {
 
-					if (result.isConfirmed) {
-
-
-					}
-				})
 		}
 	</script>
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	<!--===============================================================================================-->
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>

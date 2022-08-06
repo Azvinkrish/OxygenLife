@@ -5,6 +5,7 @@ const { ObjectId } = require('mongodb');
 
 // const async = require('hbs/lib/async');
 const Razorpay = require('razorpay');
+const { resolveSrv } = require('dns');
 
 
 require('dotenv').config();
@@ -201,6 +202,12 @@ module.exports = {
 
 
 
+        })
+    },
+    removeCartitem: (cartData)=>{
+        console.log(cartData,5555555533333);
+        return new Promise((resolve,reject)=>{
+            
         })
     },
 

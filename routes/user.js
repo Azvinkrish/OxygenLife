@@ -4,9 +4,7 @@ var router = express.Router();
 
 const userHelpers = require('../helpers/user-helpers')
 const otpHelper = require('../helpers/otpHelper');
-// const adminHelpers = require('../helpers/admin-helpers');
-
-// const async = require('hbs/lib/async');
+const { response } = require('express');
 
 
 
@@ -99,34 +97,6 @@ router.post('/login', (req, res) => {
     }
   })
 })
-
-
-
-
-router.get('/profile', userLogin, async (req, res) => {
-  let userId = req.session.user._id
-  let cartCount = await userHelpers.getCartcount(userId)
-  if (req.session.loggedIn) {
-    res.render('user/profile', { user: req.session.user, cartCount })
-  } else {
-    res.render('user/log', { "loginErr": req.session.loginErr })
-    req.session.loginErr = false
-  }
-
-});
-
-router.get('/editProfile', userLogin, async (req, res) => {
-  let user = req.session.user
-  let userId = req.session.user._id
-  let cartCount = await userHelpers.getCartcount(userId)
-  if (req.session.loggedIn) {
-    res.render('user/editProfile', { user, cartCount })
-  } else {
-    res.render('user/log', { "loginErr": req.session.loginErr })
-    req.session.loginErr = false
-  }
-
-});
 
 
 /* GET home page. */
@@ -287,10 +257,10 @@ router.post('/quantinc', async (req, res) => {
   let count = req.body.count
   let quantity = req.body.quantity
   let userId = req.session.user._id
-  let cartCount = await userHelpers.getCartcount(userId)
+ 
     await userHelpers.productCartcount(cartId, userId, proId, count, quantity)
   .then(async(response)=>{
-   
+    let cartCount = await userHelpers.getCartcount(userId)
     if (cartCount<=0) {
       res.render('user/emptyCart', { user })
     }else{
@@ -323,6 +293,20 @@ router.post('/applyCoupon/', async(req, res) => {
 })
 
 
+router.post('/removeProcart',(req,res)=>{
+  console.log(req.body, 66786786);
+
+  // if (req.session.loggedIn){
+  //   userHelpers.removeCartitem(req.body).then((response)=>{
+  //     resolve(response)
+  //   })
+
+  // }
+
+})
+
+
+
 router.get('/addcart/:id', async(req, res) => {
   if (req.session.loggedIn) {
     let user = req.session.loggedIn
@@ -334,16 +318,6 @@ router.get('/addcart/:id', async(req, res) => {
     res.redirect('/login')
   }
 })
-
-router.post('/remove-Product-forcart', (req, res, next) => {
-  console.log(487932874973479);
-  console.log(req.body);
-  console.log(true, true, true, 'ithenne');
-  userHelpers.removeFromcart(req.body).then(() => {
-    res.json(response)
-  })
-})
-
 
 
 
@@ -392,6 +366,34 @@ router.get('/editprofile', async (req, res) => {
 })
 
 
+
+router.get('/profile', userLogin, async (req, res) => {
+  let userId = req.session.user._id
+  let user = req.session.user
+  let cartCount = await userHelpers.getCartcount(userId)
+  if (req.session.loggedIn) {
+    let cart = await userHelpers.getcart(userId)
+    res.render('user/profile', { user, cartCount, cart})
+    
+  } else {
+    res.render('user/log', { "loginErr": req.session.loginErr })
+    req.session.loginErr = false
+  }
+
+});
+
+// router.get('/editProfile', userLogin, async (req, res) => {
+//   let user = req.session.user
+//   let userId = req.session.user._id
+//   let cartCount = await userHelpers.getCartcount(userId)
+//   if (req.session.loggedIn) {
+//     res.render('user/editProfile', { user, cartCount })
+//   } else {
+//     res.render('user/log', { "loginErr": req.session.loginErr })
+//     req.session.loginErr = false
+//   }
+
+// });
 
 
 
