@@ -171,12 +171,39 @@ module.exports = {
             console.log(cart, 666666666666666666666666666666);
 
             let response = cart
-             
+
             resolve(response)
         })
 
     },
-    
+    productCartcount: (cartId, userId, proId, Count, quantity) => {
+        return new Promise(async (resolve, reject) => {
+            const count = parseInt(Count)
+            console.log(count, 77788877777);
+            if (count == -1 && quantity == 1) {
+                await db.get().collection(collection.CART_COLLECTION).findOneAndUpdate({ _id: ObjectId(cartId) },
+                    { $pull: { product: { productId: ObjectId(proId) } } })
+                    .then((response) => {
+                        resolve({ removeProduct: true })
+                    })
+            } else {
+
+                await db.get().collection(collection.CART_COLLECTION).findOneAndUpdate
+                    ({ _id: ObjectId(cartId), "product.productId": ObjectId(proId) },
+                        {
+                            $inc: { "product.$.quantity": count }
+                        })
+                    .then((response) => {
+
+                        resolve(true)
+                    })
+            }
+
+
+
+        })
+    },
+
     addwish: (productid, userId) => {
         {
             console.log('adwish in');
@@ -248,28 +275,76 @@ module.exports = {
             resolve(wishList)
         })
     },
-    
     getTotal: (cart) => {
-        console.log(cart,53535353535353535);
+        console.log(122134);
+        console.log(cart);
+
         return new Promise(async (resolve, reject) => {
-           
-            let cartItems = cart.map((x) => {
-                return ({ ...x, price: Number(x.product[0].price), total: Number(x.product[0].price * x.quantity) })
-            })
 
-            let subTotal = cartItems.reduce((x, current) => {
-                return x + current.total
-            }, cartItems[0].total)
-            subTotal = subTotal - cartItems[0].total
-
-            console.log(subTotal);
-            console.log(cartItems);
-            let response = {
-                subTotal,
-                cartItems
+            for (let i = 0; i < cart.length; i++) {
+                cart[i].total = cart[i].quantity * cart[i].product[0].price
             }
 
-            resolve(response)
+            console.log(cart)
+
+            resolve(cart)
+        })
+
+    },
+
+    getSubtotal: (userId) => {
+
+
+        return new Promise(async (resolve, reject) => {
+            console.log('anas');
+            let subTotal = await db.get().collection(collection.CART_COLLECTION).aggregate([
+                {
+                    $match: { user: ObjectId(userId) }
+                },
+                {
+                    $unwind: '$product'
+                },
+                {
+                    $project: {
+                        item: '$product.productId',
+                        quantity: '$product.quantity'
+                    }
+
+                },
+                {
+                    $lookup: {
+                        from: collection.PRODUCTS_COLLECTION,
+                        localField: 'item',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $project: {
+                        item: 1, quantity: 1, product: { $arrayElemAt: ['$product', 0] }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: { $multiply: ['$quantity', '$product.price'] } }
+                    }
+                }
+            ]).toArray()
+
+            console.log(subTotal)
+
+
+            let sub = subTotal[0].total
+
+            if (sub != 0) {
+                resolve(sub)
+                console.log(1212121212121212)
+            } else {
+
+                reject()
+            }
+
         })
     },
 
@@ -286,8 +361,8 @@ module.exports = {
         })
 
     },
-    placeOrder: async (orderData, userId, total, cartProducts) => {
-        return await new Promise((resolve, reject) => {
+    placeOrder: async (orderData, userId, cart, subTotal) => {
+        return await new Promise(async (resolve, reject) => {
             let status = orderData.modeofpayment === 'cod' ? 'confirmed' : 'pending'
             let orderObj = {
                 user: ObjectId(userId),
@@ -297,12 +372,12 @@ module.exports = {
                     pincode: orderData.pincode
                 },
                 modeofpayment: orderData.modeofpayment,
-                products: cartProducts,
-                amount: total,
+                products: cart,
+                amount: subTotal,
                 status: status
 
             }
-            db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
+            await db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
 
 
 
@@ -339,11 +414,10 @@ module.exports = {
             const crypto = require('crypto')
             let hmac = crypto.Hmac('sha256', 'JDjjeE1e9aWTilDfvaszYMH6')
 
-            hmac.update(details['payment[razorpay_order_id]'] + '|' + details['payment[razorpay_payment_id]'])
+            await hmac.update(details['payment[razorpay_order_id]'] + '|' + details['payment[razorpay_payment_id]'])
             hmac = hmac.digest('hex')
             if (hmac == details['payment[razorpay_signature]']) {
-                console.log('anasmulla')
-                resolve(response)
+                resolve()
             } else {
                 reject()
             }
@@ -381,63 +455,63 @@ module.exports = {
             resolve(orders)
         })
     },
-    validateCoupon:(userCoupon,subTotal,Allcoupons)=>{
-        return new Promise(async(resolve,reject)=>{
-           
+    validateCoupon: (userCoupon, subTotal, Allcoupons) => {
+        return new Promise(async (resolve, reject) => {
 
-            
-            let match = await db.get().collection(collection.COUPON_COLLECTION).findOne({CoupoCode:(userCoupon)})
+
+
+            let match = await db.get().collection(collection.COUPON_COLLECTION).findOne({ CoupoCode: (userCoupon) })
             console.log(match)
             let discount = 0
             let grandTotal
             let validation = ""
-            if(match){
-                if(match.Limit>=0){
-                  discount = match.discount
-                 grandTotal = subTotal - discount
+            if (match) {
+                if (match.Limit >= 0) {
+                    discount = match.discount
+                    grandTotal = subTotal - discount
 
-                console.log(grandTotal);
-                console.log(discount);
-                validation ="coupon applied"
-                let response = 
-                {
-                    validation,
-                    discount,
-                    grandTotal
+                    console.log(grandTotal);
+                    console.log(discount);
+                    validation = "coupon applied"
+                    let response =
+                    {
+                        validation,
+                        discount,
+                        grandTotal
+                    }
+                    console.log(response)
+                    resolve(response)
+                } else {
+                    let validation = "Offer exceeded"
+                    reject({ validation })
                 }
-                console.log(response)
-                resolve(response)
-            }else{
-                let validation = "Offer exceeded"
-                reject({response:validation})
-            }
-            }else{
-                let validation ="Invalid Coupon"
-                reject({response:validation})
+            } else {
+                let validation = "Invalid Coupon"
+                reject({ validation })
             }
         })
     },
-    getAllcoupons:()=>{
-        return new Promise(async(resolve,reject)=>{
+    getAllcoupons: () => {
+        return new Promise(async (resolve, reject) => {
             let coupons = db.get().collection(collection.COUPON_COLLECTION).find({}).toArray()
-        
-                resolve(coupons)
-           
+
+            resolve(coupons)
+
         })
-    },updateCouponlimit:(coupon)=>{
-        return new Promise(async(resolve,reject)=>{
-        
-        let cc = await db.get().collection(collection.COUPON_COLLECTION).UpdateOne({CoupoCode:coupon})
-        // ,{
-        //     $set:{
-        //         $inc: { 'coupon.$.Limit': -1 }
-        //     }
-        //  })
-         
-      console.log(response);
-        resolve(response)
-    })
-}
+    }, updateCouponlimit: (coupon) => {
+        return new Promise(async (resolve, reject) => {
+
+            let cc = await db.get().collection(collection.COUPON_COLLECTION).UpdateOne({ CoupoCode: coupon })
+            // ,{
+            //     $set:{
+            //         $inc: { 'coupon.$.Limit': -1 }
+            //     }
+            //  })
+
+            console.log(response);
+            resolve(response)
+        })
+    }
 }
 
 

@@ -1,3 +1,4 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <body class="animsition bg-light">
 	<div id="products">
@@ -16,11 +17,11 @@
 										<th class="column-4">Quantity</th>
 										<th class="column-5">Total</th>
 									</tr>
-									{{#each cartItems}}
+									{{#each cart}}
 
 
 
-									<tr class="table_row">
+									<tr class="table_row" id="products">
 										{{#each this.product}}
 
 										<td class="column-1">
@@ -37,8 +38,9 @@
 
 										<td class="column-4">
 											<div class="wrap-num-product flex-w m-l-auto m-r-0">
-												<div  id="inc" class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
-												onclick="changeQuantity('{{this._id}}','{{this.products._id}}',-1)">
+												<div id="inc"
+													class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
+													onclick="changeQuantity('{{this._id}}','{{this.item}}',-1,'{{this.quantity}}')">
 													<i class="fs-16 zmdi zmdi-minus"></i></a>
 												</div>
 
@@ -49,20 +51,23 @@
 												--}}
 
 												<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
-													onclick="changeQuantity('{{this._id}}','{{this.products._id}}',1)">
+													onclick="changeQuantity('{{this._id}}','{{this.item}}',1,'{{this.quantity}}')">
 													<i class="fs-16 zmdi zmdi-plus"></i></a>
 
 												</div>
 
 											</div>
-										<td class=" column-5 ">
+										</td>
+
+										<td class=" column-5" id="totalId">
+
 											<i class="fa fa-inr" aria-hidden="true"></i>
 											{{this.total}}
 										</td>
 
-										</td>
-										{{!-- <td> <button class="btn btn-danger m-2">Remove</button> </td> --}}
-										<td><button onclick="removeProductforcart('{{this._id}}','{{this.item}}')"
+
+
+										<td><button onclick="removeCartpro('{{this._id}}','{{this.item}}')"
 												class="btn btn-danger">Remove</button></td>
 
 									</tr>
@@ -107,7 +112,7 @@
 								</div>
 
 								<div class="size-209">
-									<span class="mtext-110 cl2">
+									<span class="mtext-110 cl2" id="subTotalid">
 										Rs.{{subTotal}}
 									</span>
 								</div>
@@ -115,7 +120,7 @@
 							</div>
 
 
-{{!-- 
+							{{!--
 							<div class="flex-w flex-t p-t-27 p-b-33">
 								<div class="size-208">
 									<span class="mtext-101 cl2">
@@ -169,7 +174,8 @@
 															<div class="form mt-3">
 																<div class="inputbox"> <input type="text" name="name"
 																		class="form-control" required="required">
-																	<span>Cardholder Name</span> </div>
+																	<span>Cardholder Name</span>
+																</div>
 																<div class="inputbox"> <input type="text" name="name"
 																		min="1" max="999" class="form-control"
 																		required="required"> <span>Card Number</span> <i
@@ -178,11 +184,13 @@
 																	<div class="inputbox"> <input type="text"
 																			name="name" min="1" max="999"
 																			class="form-control" required="required">
-																		<span>Expiration Date</span> </div>
+																		<span>Expiration Date</span>
+																	</div>
 																	<div class="inputbox"> <input type="text"
 																			name="name" min="1" max="999"
 																			class="form-control" required="required">
-																		<span>CVV</span> </div>
+																		<span>CVV</span>
+																	</div>
 																</div>
 																<div class="px-5 pay"> <button
 																		class="btn btn-success btn-block">Add
@@ -195,7 +203,8 @@
 														<div class="px-5 mt-5">
 															<div class="inputbox"> <input type="text" name="name"
 																	class="form-control" required="required">
-																<span>Paypal Email Address</span> </div>
+																<span>Paypal Email Address</span>
+															</div>
 															<div class="pay px-5"> <button
 																	class="btn btn-primary btn-block">Add
 																	paypal</button> </div>
@@ -209,7 +218,8 @@
 							</div> --}}
 
 							{{!-- <button
-								class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"> --}}
+								class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+								--}}
 								<a class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"
 									href="/placeorder">
 									Proceed to Checkout
@@ -230,58 +240,41 @@
 			<i class="zmdi zmdi-chevron-up"></i>
 		</span>
 	</div>
-	<script>
-		function decCart(proId) {
-    alert(proId)
-    console.log('kajshfkjfsdddddddddddddddddddddddddddddd')
-      $.ajax({
-          url: 'decCart/' + proId,
-          method: 'get',
-          success: (response) => {
-              SVGDefsElement
-          }
-      })
-  }
-	</script>
 
 	<script>
-		function changeQuantity(cartId, proId, count) {
-			let quantity = parseInt(document.getElementById(proId).innerHTML)
-			count = parseInt(count)
+		function changeQuantity(cartId, proId, count, quantity) {
+			console.log(count)
 
 			$.ajax({
-				url: '/change-quantity',
-
+				url: '/quantinc',
 				data: {
-
 					cart: cartId,
-					product: proId,
+					proId: proId,
 					count: count,
 					quantity: quantity
 
 				},
 				method: 'post',
 				success: (response) => {
-					if (response.removeProduct) {
-						alert("cart item removed")
-						$("#products").load(location.href + " #products");
-					} else {
-						{ { !--alert("hiii") --} }
-						{ { !--location.reload() --} }
-						document.getElementById(proId).innerHTML = quantity + count
-						$("#products").load(location.href + " #products");
 
-					}
+					console.log(response)
+					let subTotal = response.subTotal
+					document.getElementById("subTotalid").innerHTML = subTotal
+					$("#products").load(location.href + "#products");
+
 
 				}
+
 
 			})
 		}
 	</script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
-		function removeProductforcart(cartId, proId) {
+		function removeCartpro(cartId, proId) {
 			Swal.fire({
+
 				title: 'Are you sure?',
 				text: "You won't be able to revert this!",
 				icon: 'warning',
@@ -290,31 +283,21 @@
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete it!'
 			}).then((result) => {
-
 				if (result.isConfirmed) {
-
-					$.ajax({
-				url: "/remove-Product-forcart",
-				data: {
-
-					product:proId,
-					cart:cartId
-
-				},
-				method: "post",
-				success: (response) => {},
-				});
-				Swal.fire(
+					Swal.fire(
 						'Deleted!',
 						'Your file has been deleted.',
 						'success'
 					)
-
-			}
-			}).then(()=>{
-				//location.reload();
+				}
 			})
-				
+				.then((result) => {
+
+					if (result.isConfirmed) {
+
+
+					}
+				})
 		}
 	</script>
 

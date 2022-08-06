@@ -32,6 +32,8 @@ module.exports = {
     },
     addProducts: (productData) => {
         return new Promise(async (resolve, reject) => {
+                productData.quantity = parseInt(productData.quantity)
+                productData.price = parseInt(productData.price)
           
                 db.get().collection(collection.PRODUCTS_COLLECTION).insertOne(productData).then((response) => {
                     resolve(response)
@@ -152,8 +154,35 @@ getcategory: () => {
         resolve(categoryList)
     })
 
-}
+},
+unblockUser:(userId)=>{
+  
+    return new Promise (async(resolve,reject)=>{
+        db.get().collection(collection.USER_COLLECTION).updateOne({_id:ObjectId(userId)},
+        {
+            $set:{
+                isBlocked:true
+            }
+        })
+      
+        resolve()
+    })
+},
+blockUser:(userId)=>{
+  
+    return new Promise (async(resolve,reject)=>{
+        db.get().collection(collection.USER_COLLECTION).updateOne({_id:ObjectId(userId)},
+        {
+            $set:{
+                isBlocked:false
+            }
+        })
+      
+        resolve()
+    })
 
+
+}
 }
 
 

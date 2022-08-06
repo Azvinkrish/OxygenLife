@@ -1,4 +1,5 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body class="animsition bg-light">
 	<div id="products">
@@ -115,17 +116,20 @@
 
 														</li>
 														<li></li>
-														<li><span>Discount on MRP</span> <span class="text-success" id="discountId">-
+														<li><span>Discount on MRP</span> <span class="text-success"
+																id="discountId">-
 																Rs. {{discount}}</span>
 														</li>
+
 														<li><span>Shipping</span> <span>Free</span></li>
-														{{#if grandTotal}}
+
+
+														<input type="text" name="subTotal" id="amount"
+															value="{{subTotal}}">
 														<li><span class="fw-bolder">Total Amount</span> <span
-																class="fw-bolder">Rs. {{grandTotal}}</span></li>
-														{{else}}
-														<li><span class="fw-bolder">Total Amount</span> <span
-																class="fw-bolder " id="subtotalId">Rs. {{subTotal}}</span></li>
-														{{/if}}
+																class="fw-bolder " id="subtotalId">Rs.
+																{{subTotal}}</span></li>
+
 														<li>
 															<div class="form-check form-check-inline">
 																<input class="form-check-input" type="radio"
@@ -204,6 +208,7 @@
 
 		$("#checkOut_form").submit((e) => {
 			e.preventDefault()
+			alert("gui")
 			$.ajax({
 				url: '/confirmOrder',
 				method: 'post',
@@ -221,6 +226,7 @@
 		});
 
 		function razorpayPayment(order) {
+			alert('hai')
 			var options = {
 				"key": "rzp_test_Uvhyfh8NZOZ5Ey", // Enter the Key ID generated from the Dashboard
 				"amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -296,42 +302,47 @@
 				},
 				method: 'post',
 				success: (response) => {
-					console.log(response.err.response)
-					
-					if (response.response.validation == "coupon applied") {
-						
-						Swal.fire(
-							'SUCCESS',
-							'COUPON APPLIED SUCCESSFULLY'
-							
-						)
-					
-					let discount = response.response.discount
-					let grandTotal = response.response.grandTotal
-					console.log(discount,grandTotal)
-					document.getElementById("discountId").innerHTML = discount
-					document.getElementById("subtotalId").innerHTML = grandTotal
-			
+					if (response.response) {
+						if (response.response.validation == "coupon applied") {
 
-					}else if(response.err.validation == "Offer exceeded"){
 							Swal.fire(
-							'SUCCESS',
-							'Offer Exceeded'
-							
-						)
-					
+								'SUCCESS',
+								'COUPON APPLIED SUCCESSFULLY'
 
-						}else{
-								Swal.fire(
-							'SUCCESS',
-							'Invalid coupon'
-							
-						)
-					
+							)
+
+							let discount = response.response.discount
+							let grandTotal = response.response.grandTotal
+
+							console.log(discount, grandTotal)
+							document.getElementById("discountId").innerHTML = discount
+							document.getElementById("subtotalId").innerHTML = grandTotal
+							document.getElementById("amount").value = grandTotal
+
+
+						}
+					} else {
+						if (response.err.validation == "Invalid Coupon") {
+							Swal.fire(
+								'SUCCESS',
+								'Invalid coupon'
+
+							)
+						} else {
+							Swal.fire(
+								'SUCCESS',
+								'Offer Exceeded'
+
+							)
+
 						}
 
+					}
 
 				}
+
+
+
 			})
 
 		}
@@ -346,7 +357,6 @@
 	{{!--
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script> --}}
 
-	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 	<!--===============================================================================================-->

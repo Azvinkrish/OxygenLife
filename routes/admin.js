@@ -273,6 +273,24 @@ router.get('/logout',(req,res)=>{
   res.redirect('/')
 })
 
+
+
+router.post('/unBlockUser/:id',async(req,res)=>{
+userId = req.params.id
+await adminHelper.unblockUser(userId).then((response)=>{
+  res.json(response)
+})
+})
+
+
+
+router.post('/blockUser/:id',async(req,res)=>{
+  userId = req.params.id
+  await adminHelper.blockUser(userId).then((response)=>{
+    res.json(response)
+  })
+  })
+
 module.exports = router;
 
 
