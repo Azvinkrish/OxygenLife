@@ -278,7 +278,7 @@
 		}
 	</script>
 
-	
+
 	<script>
 		function removeCartpro(cartId, proId) {
 
@@ -296,25 +296,26 @@
 				confirmButtonText: 'Yes, delete it!'
 			}).then((result) => {
 				if (result.isConfirmed) {
-				$.ajax({
-					url: "/removeProcart",
-					data: {
-						cart: cartId,
-						product: proId,
-					},
-					method: "post",
-					success: (Response) => {
-						if (Response) {
-							alert('product removed from cart')
-							location.reload()
+					$.ajax({
+						url: "/removeProcart",
+						data: {
+							cart: cartId,
+							product: proId,
+						},
+						method: "post",
+						success: (response) => {
+							if (response) {
+								Swal.fire(
+									'Deleted!',
+									'Your file has been deleted.',
+									'success'
+								)
+
+								location.reload()
+							}
 						}
-					}
-				})
-				Swal.fire(
-						'Deleted!',
-						'Your file has been deleted.',
-						'success'
-					)
+					})
+
 				}
 			})
 

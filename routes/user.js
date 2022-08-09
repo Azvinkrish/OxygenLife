@@ -296,12 +296,13 @@ router.post('/applyCoupon/', async(req, res) => {
 router.post('/removeProcart',(req,res)=>{
   console.log(req.body, 66786786);
 
-  // if (req.session.loggedIn){
-  //   userHelpers.removeCartitem(req.body).then((response)=>{
-  //     resolve(response)
-  //   })
+  if (req.session.loggedIn){
+    userHelpers.removeCartitem(req.body).then(()=>{
+      console.log(response,444444)
+      res.json({response})
+    })
 
-  // }
+  }
 
 })
 
@@ -404,11 +405,17 @@ router.get('/profile', userLogin, async (req, res) => {
 
 
 router.get('/successPage', (req, res) => {
-  console.log(999999999999);
+ if(req.session.loggedIn){
+  
 
-
+  
   res.render('user/success', { user })
 
+
+ }
+
+
+  
 })
 
 router.post('/verify-payment', (req, res) => {
@@ -424,15 +431,14 @@ router.post('/verify-payment', (req, res) => {
 })
 
 router.get('/orders', async (req, res) => {
-  let user = req.session.user._id
   if (req.session.loggedIn) {
-    console.log(1111111111111111111)
     let userId = req.session.user._id
+    let user = req.session.user
     let cartCount = await userHelpers.getCartcount(userId)
-    let orders = userHelpers.getOrderlist(user).then((orders) => {
+    let orders = await userHelpers.getOrderlist(userId)
 
-      res.render('user/orderSummary', { user, cartCount })
-    })
+      res.render('user/orderSummary', { userId, cartCount,orders,user})
+   
   } else {
     res.redirect('/login')
   }

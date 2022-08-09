@@ -1,9 +1,8 @@
 var express = require('express');
-// const async = require('hbs/lib/async');
-// const adminHelpers = require('../helpers/admin-helpers');
+
 var router = express.Router();
 const adminHelper=require('../helpers/admin-helpers');
-// const userHelpers = require('../helpers/user-helpers');
+
 var objectId=require('mongodb').ObjectId
 
 /* GET users listing. */
@@ -71,9 +70,9 @@ router.get('/viewusers', function(req, res, next) {
 
 router.get('/orders', (req, res, next) => {
   if(req.session.login){
-    adminHelper.getAllUsers().then((users)=>{
-      res.render('admin/view-orders',{admin:true} );
-    console.log(users);
+    adminHelper.getOrderlist().then((orders)=>{
+      res.render('admin/view-orders',{admin:true,orders} );
+  
     })
   }
   else{
@@ -277,8 +276,8 @@ router.get('/logout',(req,res)=>{
 
 router.post('/unBlockUser/:id',async(req,res)=>{
 userId = req.params.id
-await adminHelper.unblockUser(userId).then((response)=>{
-  res.json(response)
+await adminHelper.unblockUser(userId).then(()=>{
+  res.json({status:true})
 })
 })
 
@@ -286,10 +285,38 @@ await adminHelper.unblockUser(userId).then((response)=>{
 
 router.post('/blockUser/:id',async(req,res)=>{
   userId = req.params.id
-  await adminHelper.blockUser(userId).then((response)=>{
+  await adminHelper.blockUser(userId).then(()=>{
+    res.json({status:true})
+ })
+})
+
+router.post('/removecategory',async(req,res)=>{
+  console.log(req.body);
+  await adminHelper.removeCat(cartId).then(()=>{
     res.json(response)
   })
+
+})
+
+router.post('/removeproduct',async(req,res)=>{
+  console.log(req.body,44444);
+  await adminHelper.removeProduct(cartId).then(()=>{
+    res.json({status:true})
   })
+
+})
+
+
+router.get('/editcategory',(req,res)=>{
+  if(req.session.login){
+    res.render('/admin/editCategory',{admin:true})
+
+  }else{
+    res.redirect('/admin')
+  }
+});
+
+
 
 module.exports = router;
 

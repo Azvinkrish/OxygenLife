@@ -1,5 +1,5 @@
-<div class="container-fluid">
 
+<div class="container-fluid">
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">MANAGE PRODUCT CATEGORY</h1>
 
@@ -7,10 +7,10 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
 
-                      <div class="card-header py-3 d-flex justify-content-between">
-                            
-                        <a href="/admin/addcategory"><button type="button" class="btn btn-primary">Add Category</button></a>
-                        </div>
+            <div class="card-header py-3 d-flex justify-content-between">
+
+                <a href="/admin/addcategory"><button type="button" class="btn btn-primary">Add Category</button></a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -18,17 +18,22 @@
                     <thead>
                         <tr>
                             <th>Category</th>
-                           
+
+                            <th>Edit</th>
+
                             <th>Remove</th>
 
                         </tr>
                     </thead>
-               
+
                     <tbody>
                         {{#each category}}
                         <tr>
                             <td>{{this.category}}</td>
-                            <td><a href="#">Delete</a> </td>
+                            <input  type="text" value="{{this._id}}"  id="editCategory" hidden>
+                            <td><a href="/editcategory?id={{this._id}}" >Edit</a> </td>
+                            {{!-- <td><a href="/admin/removecategory?id={{this._id}}" >Delete</a> </td> --}}
+                           <td><a href="#" onclick="removeCat()" >Delete</a> </td>
                         </tr>
                         {{/each}}
 
@@ -82,28 +87,42 @@
 
             <form action="/admin/addcategory" method="post">
                 <div class="container">
-                        <div class="form-outline">
-                            <input type="text" name="brand" id="typePasswordX" class="form-control form-control-lg"
-                                placeholder="Name category" />
-                        </div>
+                    <div class="form-outline">
+                        <input type="text" name="brand" id="typePasswordX" class="form-control form-control-lg"
+                            placeholder="Name category" />
+                    </div>
                 </div>
                 <p>{{Err}}</p>
                 <div class="container">
-                <button class="btn btn-primary float-right " type="submit">  Add  </button>
+                    <button class="btn btn-primary float-right " type="submit"> Add </button>
                 </div>
-             </form>
+            </form>
 
-        <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+
+            </div>
         </div>
     </div>
 </div>
-</div>
+
+<script>
+    function removeCat(){
+        alert("remove")
+
+        let cart_id = document.getElementById("editCategory").value
+        console.log()
+    
+    
+        
+    }
+
+
+</script>
 
 
 
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <!-- Bootstrap core JavaScript-->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

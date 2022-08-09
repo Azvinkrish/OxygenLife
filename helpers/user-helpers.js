@@ -205,8 +205,17 @@ module.exports = {
         })
     },
     removeCartitem: (cartData)=>{
-        console.log(cartData,5555555533333);
-        return new Promise((resolve,reject)=>{
+       
+        return new Promise(async(resolve,reject)=>{
+            let cart = await db.get().collection(collection.CART_COLLECTION).findOne({_id:ObjectId(cartData.cart)})
+            if(cart){
+                await db.get().collection(collection.CART_COLLECTION).findOneAndUpdate({ _id: ObjectId(cartData.cart) },
+                    { $pull: { product: { productId: ObjectId(cartData.product) } } })
+                    .then((response) => {
+                        resolve({ removeProduct: true })
+                    })
+
+            }
             
         })
     },
@@ -369,6 +378,9 @@ module.exports = {
 
     },
     placeOrder: async (orderData, userId, cart, subTotal) => {
+        console.log(orderData,67676767);
+        
+
         return await new Promise(async (resolve, reject) => {
             let status = orderData.modeofpayment === 'cod' ? 'confirmed' : 'pending'
             let orderObj = {
@@ -379,9 +391,13 @@ module.exports = {
                     pincode: orderData.pincode
                 },
                 modeofpayment: orderData.modeofpayment,
+                date:Date(),
                 products: cart,
                 amount: subTotal,
-                status: status
+                status: status,
+                if(couponApplied){
+
+                }
 
             }
             await db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
@@ -523,64 +539,3 @@ module.exports = {
 
 
 
-
-
-// decCart:(proId,userId)=>{
-    //     console.log(proId,true,true);
-    //     console.log(userId,"hahaah");
-
-    //     return new Promise(async(resolve,reject) => {
-    //         let usercart = db.get().collection(collection.CART_COLLECTION).findOne({'product.productId':ObjectId(productid)})
-    //         console.log(usercart);
-    //         if(usercart){
-    //             let productExst = await db.get().collection(collection.CART_COLLECTION).findOne({'product.productId':ObjectId(productid)})
-    //             console.log(productExst);
-    //             if(productExst){
-    //                 db.get().collection(collection.CART_COLLECTION).updateOne({'product.productId':ObjectId(productid)},
-    //                 {
-    //                     $inc:{'product.$.quantity':-1}
-    //                 }).then((response) =>{
-    //                     resolve()
-    //                 })
-    //             }
-
-    //         }
-    //     })
-    // },
-    // incCart:(proId,userId)=>{
-    //     console.log(proId,true,true);
-    //     console.log(userId,"hahaah");
-
-    //     return new Promise(async(resolve,reject) => {
-    //         let usercart = db.get().collection(collection.CART_COLLECTION).findOne({'product.productId':ObjectId(productid)})
-    //         console.log(usercart);
-    //         if(usercart){
-    //             let productExst = await db.get().collection(collection.CART_COLLECTION).findOne({'product.productId':ObjectId(productid)})
-    //             console.log(productExst);
-    //             if(productExst){
-    //                 db.get().collection(collection.CART_COLLECTION).updateOne({'product.productId':ObjectId(productid)},
-    //                 {
-    //                     $inc:{'product.$.quantity':-1}
-    //                 }).then((response) =>{
-    //                     resolve()
-    //                 })
-    //             }
-
-    //         }
-    //     })
-    // },
-    // removeFromcart: (data) => {
-    //     return new Promise(async (resolve, reject) => {
-    //         console.log(data);
-    //         // const cart=data.cart
-    //         console.log("999999999999999");
-    //         db.get().collection(collection.CART_COLLECTION)
-    //             .updateOne({ _id: ObjectId(data.cart) },
-
-    //                 {
-    //                     $pull: { product: { item: ObjectId(data.product) } }
-    //                 }).then((response) => {
-    //                     resolve({ removeProduct: true })
-    //                 })
-    //     })
-    // },

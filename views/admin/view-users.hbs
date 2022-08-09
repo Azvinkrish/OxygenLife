@@ -1,15 +1,15 @@
-<div class="container-fluid">
+<div class="container-fluid" id="action">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">User Management</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <div class="card-header py-3" >
             {{!-- <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6> --}}
         </div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive"  >
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
@@ -106,14 +106,14 @@
 
 <script>
     function unBlockUser(userId) {
-        console.log(userId,54545454)
-        
+                
         $.ajax({
             url: '/admin/unBlockUser/' + userId,
             method: 'post',
             success: (response) => {
+                $("#action").load(location.href + "#action");
                
-                  window.reload()
+                  
             }
         })
     }
@@ -125,6 +125,7 @@
             url: '/admin/blockUser/' + userId,
             method: 'post',
             success: (response) => {
+                  $("#action").load(location.href + "#action");
             }
         })
     }

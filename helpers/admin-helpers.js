@@ -181,8 +181,31 @@ blockUser:(userId)=>{
         resolve()
     })
 
+}, getOrderlist: async () => {
+      console.log(2222222222222222222);
+    return await new Promise(async (resolve, reject) => {
+        console.log(333333333333333);
+        let orders = await db.get().collection(collection.ORDER_COLLECTION).find().toArray()
 
+
+        console.log(orders)
+        resolve(orders)
+    })
+}, removeCat:(cartId)=>{
+    return new Promise((resolve,reject)=>{
+        db.get().collection(collection.CATEGORY_COLLECTION).deleteOne({_id:ObjectId(cartId)})
+        resolve()
+
+    })
+
+},
+removeProduct:(proId)=>{
+    return new Promise((resolve,reject)=>{
+        db.get().collection(collection.PRODUCTS_COLLECTION).deleteOne({_id:ObjectId(proId)})
+        resolve()
+    })
 }
+
 }
 
 
